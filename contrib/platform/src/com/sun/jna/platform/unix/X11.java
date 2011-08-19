@@ -240,8 +240,26 @@ public interface X11 extends Library {
     class Screen extends PointerType { }
     // TODO: define structure
     class GC extends PointerType { }
-    // TODO: define structure
-    class XImage extends PointerType { }
+    
+    class XImage extends Structure { 
+        public int width, height;        /* size of image */
+        public int xoffset;        /* number of pixels offset in X direction */
+        public int format;            /* XYBitmap, XYPixmap, ZPixmap */
+        public Pointer data;            /* pointer to image data */
+        public int byte_order;        /* data byte order, LSBFirst, MSBFirst */
+        public int bitmap_unit;        /* quant. of scanline 8, 16, 32 */
+        public int bitmap_bit_order;    /* LSBFirst, MSBFirst */
+        public int bitmap_pad;        /* 8, 16, 32 either XY or ZPixmap */
+        public int depth;            /* depth of image */
+        public int bytes_per_line;        /* accelarator to next line */
+        public int bits_per_pixel;        /* bits per pixel (ZPixmap) */
+        public NativeLong red_mask;    /* bits in z arrangment */
+        public NativeLong green_mask;
+        public NativeLong blue_mask;
+        public Pointer obdata;        /* hook for the object routines to hang on */
+    }
+    
+    class Region extends PointerType { }
 
     /** Definition (incomplete) of the Xext library. */
     interface Xext extends Library {
@@ -264,17 +282,38 @@ public interface X11 extends Library {
     /** Definition (incomplete) of the Xrender library. */
     interface Xrender extends Library {
         Xrender INSTANCE = (Xrender)Native.loadLibrary("Xrender", Xrender.class);
+        
+        class Glyph extends NativeLong {
+    		private static final long serialVersionUID = 1L;
+            public Glyph(long value) { super(value); }
+            public Glyph() { }
+        }
+        
+        class GlyphSet extends NativeLong {
+    		private static final long serialVersionUID = 1L;
+            public GlyphSet(long value) { super(value); }
+            public GlyphSet() { }
+        }
+        
+        class Picture extends NativeLong {
+    		private static final long serialVersionUID = 1L;
+            public Picture(long value) { super(value); }
+            public Picture() { }
+        }
+        
+        class PictFormat extends NativeLong {
+    		private static final long serialVersionUID = 1L;
+            public PictFormat(long value) { super(value); }
+            public PictFormat() { }
+        }
+        
         class XRenderDirectFormat extends Structure {
             public short red, redMask;
             public short green, greenMask;
             public short blue, blueMask;
             public short alpha, alphaMask;
         }
-        class PictFormat extends NativeLong {
-    		private static final long serialVersionUID = 1L;
-            public PictFormat(long value) { super(value); }
-            public PictFormat() { }
-        }
+        
         class XRenderPictFormat extends Structure {
             public PictFormat id;
             public int type;
@@ -282,9 +321,529 @@ public interface X11 extends Library {
             public XRenderDirectFormat direct;
             public Colormap colormap;
         }
+        
+	class XRenderPictureAttributes extends Structure {
+	    public int 		repeat;
+	    public Picture		alpha_map;
+	    public int			alpha_x_origin;
+	    public int			alpha_y_origin;
+	    public int			clip_x_origin;
+	    public int			clip_y_origin;
+	    public Pixmap		clip_mask;
+	    public boolean		graphics_exposures;
+	    public int			subwindow_mode;
+	    public int			poly_edge;
+	    public int			poly_mode;
+	    public Atom		dither;
+	    public boolean		component_alpha;
+	}
+
+	class XRenderColor extends Structure {
+	    public short   red;
+	    public short   green;
+	    public short   blue;
+	    public short   alpha;
+	}
+
+	class XGlyphInfo extends Structure {
+	    public short  width;
+	    public short  height;
+	    public short	    x;
+	    public short	    y;
+	    public short	    xOff;
+	    public short	    yOff;
+	}
+
+	class XGlyphElt8 extends Structure {
+	    public GlyphSet		    glyphset;
+	    public String	    chars;
+	    public int			    nchars;
+	    public int			    xOff;
+	    public int			    yOff;
+	}
+
+	class XGlyphElt16 extends Structure {
+	    public GlyphSet		    glyphset;
+	    public Pointer  chars;
+	    public int			    nchars;
+	    public int			    xOff;
+	    public int			    yOff;
+	}
+
+	class XGlyphElt32 extends Structure {
+	    public GlyphSet		    glyphset;
+	    public Pointer    chars;
+	    public int			    nchars;
+	    public int			    xOff;
+	    public int			    yOff;
+	}
+
+	class XPointDouble extends Structure {
+	    public double /* XDouble */  x, y;
+	}
+
+
+	class XPointFixed extends Structure {
+	    public int /* XFixed */  x, y;
+	}
+
+	class XLineFixed extends Structure {
+	    public XPointFixed	p1, p2;
+	}
+
+	class XTriangle extends Structure {
+	    public XPointFixed	p1, p2, p3;
+	}
+
+	class XCircle extends Structure {
+	    public int /* XFixed */ x;
+	    public int /* XFixed */ y;
+	    public int /* XFixed */ radius;
+	}
+
+	class XTrapezoid extends Structure {
+	    public int /* XFixed */  top, bottom;
+	    public XLineFixed	left, right;
+	}
+
+	class XTransform extends Structure {
+	    public int[][] /* XFixed */  matrix;
+	}
+
+	class XFilters extends Structure {
+	    public int	    nfilter;
+	    public String[] filter;
+	    public int	    nalias;
+	    public short[]   alias;
+	}
+
+	class XIndexValue extends Structure {
+	    public NativeLong    pixel;
+	    public short   red, green, blue, alpha;
+	}
+
+	class XAnimCursor extends Structure {
+	    public Cursor	    cursor;
+	    public NativeLong   delay;
+	}
+
+	class XSpanFix extends Structure {
+	    public int /* XFixed */	    left, right, y;
+	}
+
+	class XTrap extends Structure {
+	    public XSpanFix	    top, bottom;
+	}
+
+	class XLinearGradient extends Structure {
+	    public XPointFixed p1;
+	    public XPointFixed p2;
+	}
+
+	class XRadialGradient extends Structure {
+	    public XCircle inner;
+	    public XCircle outer;
+	}
+
+	class XConicalGradient extends Structure {
+	    public XPointFixed center;
+	    public int /* XFixed */ angle; /* in degrees */
+	}
+        
         int PictTypeIndexed = 0x0;
         int PictTypeDirect = 0x1;
-        XRenderPictFormat XRenderFindVisualFormat(Display display, Visual visual);
+	int BadPictFormat			    = 0;
+	int BadPicture			    = 1;
+	int BadPictOp			    = 2;
+	int BadGlyphSet			    = 3;
+	int BadGlyph			    = 4;
+	int PictOpMinimum			    = 0;
+	int PictOpClear			    = 0;
+	int PictOpSrc			    = 1;
+	int PictOpDst			    = 2;
+	int PictOpOver			    = 3;
+	int PictOpOverReverse		    = 4;
+	int PictOpIn			    = 5;
+	int PictOpInReverse			    = 6;
+	int PictOpOut			    = 7;
+	int PictOpOutReverse		    = 8;
+	int PictOpAtop			    = 9;
+	int PictOpAtopReverse		    = 10;
+	int PictOpXor			    = 11;
+	int PictOpAdd			    = 12;
+	int PictOpSaturate			    = 13;
+	int PictOpMaximum			    = 13;
+	int PictOpDisjointMinimum			    = 0x10;
+	int PictOpDisjointClear			    = 0x10;
+	int PictOpDisjointSrc			    = 0x11;
+	int PictOpDisjointDst			    = 0x12;
+	int PictOpDisjointOver			    = 0x13;
+	int PictOpDisjointOverReverse		    = 0x14;
+	int PictOpDisjointIn			    = 0x15;
+	int PictOpDisjointInReverse			    = 0x16;
+	int PictOpDisjointOut			    = 0x17;
+	int PictOpDisjointOutReverse		    = 0x18;
+	int PictOpDisjointAtop			    = 0x19;
+	int PictOpDisjointAtopReverse		    = 0x1a;
+	int PictOpDisjointXor			    = 0x1b;
+	int PictOpDisjointMaximum			    = 0x1b;
+	int PictOpConjointMinimum			    = 0x20;
+	int PictOpConjointClear			    = 0x20;
+	int PictOpConjointSrc			    = 0x21;
+	int PictOpConjointDst			    = 0x22;
+	int PictOpConjointOver			    = 0x23;
+	int PictOpConjointOverReverse		    = 0x24;
+	int PictOpConjointIn			    = 0x25;
+	int PictOpConjointInReverse			    = 0x26;
+	int PictOpConjointOut			    = 0x27;
+	int PictOpConjointOutReverse		    = 0x28;
+	int PictOpConjointAtop			    = 0x29;
+	int PictOpConjointAtopReverse		    = 0x2a;
+	int PictOpConjointXor			    = 0x2b;
+	int PictOpConjointMaximum			    = 0x2b;
+	int PictOpBlendMinimum			    = 0x30;
+	int PictOpMultiply				    = 0x30;
+	int PictOpScreen				    = 0x31;
+	int PictOpOverlay				    = 0x32;
+	int PictOpDarken				    = 0x33;
+	int PictOpLighten				    = 0x34;
+	int PictOpColorDodge			    = 0x35;
+	int PictOpColorBurn				    = 0x36;
+	int PictOpHardLight				    = 0x37;
+	int PictOpSoftLight				    = 0x38;
+	int PictOpDifference			    = 0x39;
+	int PictOpExclusion				    = 0x3a;
+	int PictOpHSLHue				    = 0x3b;
+	int PictOpHSLSaturation			    = 0x3c;
+	int PictOpHSLColor				    = 0x3d;
+	int PictOpHSLLuminosity			    = 0x3e;
+	int PictOpBlendMaximum			    = 0x3e;
+	int PolyEdgeSharp			    = 0;
+	int PolyEdgeSmooth			    = 1;
+	int PolyModePrecise			    = 0;
+	int PolyModeImprecise		    = 1;
+	int CPRepeat			    = (1 << 0);
+	int CPAlphaMap			    = (1 << 1);
+	int CPAlphaXOrigin			    = (1 << 2);
+	int CPAlphaYOrigin			    = (1 << 3);
+	int CPClipXOrigin			    = (1 << 4);
+	int CPClipYOrigin			    = (1 << 5);
+	int CPClipMask			    = (1 << 6);
+	int CPGraphicsExposure		    = (1 << 7);
+	int CPSubwindowMode			    = (1 << 8);
+	int CPPolyEdge			    = (1 << 9);
+	int CPPolyMode			    = (1 << 10);
+	int CPDither			    = (1 << 11);
+	int CPComponentAlpha		    = (1 << 12);
+	int CPLastBit			    = 12;
+	String FilterNearest			    = "nearest";
+	String FilterBilinear			    = "bilinear";
+	String FilterConvolution		    = "convolution";
+	String FilterFast			    = "fast";
+	String FilterGood			    = "good";
+	String FilterBest			    = "best";
+	int FilterAliasNone			    = -1;
+	int SubPixelUnknown			    = 0;
+	int SubPixelHorizontalRGB		    = 1;
+	int SubPixelHorizontalBGR		    = 2;
+	int SubPixelVerticalRGB		    = 3;
+	int SubPixelVerticalBGR		    = 4;
+	int SubPixelNone			    = 5;
+	int RepeatNone                          = 0;
+	int RepeatNormal                        = 1;
+	int RepeatPad                           = 2;
+	int RepeatReflect                       = 3;
+	int PictStandardARGB32  = 0;
+	int PictStandardRGB24   = 1;
+	int PictStandardA8	    = 2;
+	int PictStandardA4	    = 3;
+	int PictStandardA1	    = 4;
+	int PictStandardNUM	    = 5;
+        
+	boolean XRenderQueryExtension (Display dpy, IntByReference event_basep, IntByReference error_basep);
+
+	int XRenderQueryVersion (Display dpy,
+				    IntByReference     major_versionp,
+				    IntByReference     minor_versionp);
+
+	int XRenderQueryFormats (Display dpy);
+
+	int XRenderQuerySubpixelOrder (Display dpy, int screen);
+
+	boolean XRenderSetSubpixelOrder (Display dpy, int screen, int subpixel);
+
+	XRenderPictFormat XRenderFindVisualFormat (Display dpy, Visual visual);
+
+	XRenderPictFormat XRenderFindFormat (Display			dpy,
+			   NativeLong		mask,
+			   XRenderPictFormat	templ,
+			   int				count);
+	    
+	XRenderPictFormat XRenderFindStandardFormat (Display		dpy,
+				   int			format);
+
+	XIndexValue XRenderQueryPictIndexValues(Display			dpy,
+				    XRenderPictFormat	format,
+				    IntByReference				num);
+
+	Picture XRenderCreatePicture (Display				dpy,
+			      Drawable				drawable,
+			      XRenderPictFormat		format,
+			      NativeLong			valuemask,
+			      XRenderPictureAttributes	attributes);
+
+	void XRenderChangePicture (Display				dpy,
+			      Picture				picture,
+			      NativeLong			valuemask,
+			      XRenderPictureAttributes  attributes);
+
+	void XRenderSetPictureClipRectangles (Display	    dpy,
+					 Picture	    picture,
+					 int		    xOrigin,
+					 int		    yOrigin,
+					 XRectangle[] rects,
+					 int		    n);
+
+	void XRenderSetPictureClipRegion (Display	    dpy,
+				     Picture	    picture,
+				     Region	    r);
+
+	void XRenderSetPictureTransform (Display	    dpy,
+				    Picture	    picture,
+				    XTransform	    transform);
+
+	void XRenderFreePicture (Display                   dpy,
+			    Picture                   picture);
+
+	void XRenderComposite (Display   dpy,
+			  int	    op,
+			  Picture   src,
+			  Picture   mask,
+			  Picture   dst,
+			  int	    src_x,
+			  int	    src_y,
+			  int	    mask_x,
+			  int	    mask_y,
+			  int	    dst_x,
+			  int	    dst_y,
+			  int	width,
+			  int	height);
+
+	GlyphSet XRenderCreateGlyphSet (Display dpy, XRenderPictFormat format);
+
+	GlyphSet XRenderReferenceGlyphSet (Display dpy, GlyphSet existing);
+
+	void XRenderFreeGlyphSet (Display dpy, GlyphSet glyphset);
+
+	void XRenderAddGlyphs (Display		dpy,
+			  GlyphSet		glyphset,
+			  Glyph[]		gids,
+			  XGlyphInfo[]	glyphs,
+			  int			nglyphs,
+			  Pointer		images,
+			  int			nbyte_images);
+
+	void XRenderFreeGlyphs (Display	    dpy,
+			   GlyphSet	    glyphset,
+			   Glyph[]    gids,
+			   int		    nglyphs);
+
+	void XRenderCompositeString8 (Display		    dpy,
+				 int			    op,
+				 Picture		    src,
+				 Picture		    dst,
+				 XRenderPictFormat  maskFormat,
+				 GlyphSet		    glyphset,
+				 int			    xSrc,
+				 int			    ySrc,
+				 int			    xDst,
+				 int			    yDst,
+				 String		    string,
+				 int			    nchar);
+
+	void XRenderCompositeString16 (Display		    dpy,
+				  int			    op,
+				  Picture		    src,
+				  Picture		    dst,
+				  XRenderPictFormat maskFormat,
+				  GlyphSet		    glyphset,
+				  int			    xSrc,
+				  int			    ySrc,
+				  int			    xDst,
+				  int			    yDst,
+				  Pointer    string,
+				  int			    nchar);
+
+	void XRenderCompositeString32 (Display		    dpy,
+				  int			    op,
+				  Picture		    src,
+				  Picture		    dst,
+				  XRenderPictFormat maskFormat,
+				  GlyphSet		    glyphset,
+				  int			    xSrc,
+				  int			    ySrc,
+				  int			    xDst,
+				  int			    yDst,
+				  Pointer	    string,
+				  int			    nchar);
+
+	void XRenderCompositeText8 (Display			    dpy,
+			       int			    op,
+			       Picture			    src,
+			       Picture			    dst,
+			       XRenderPictFormat    maskFormat,
+			       int			    xSrc,
+			       int			    ySrc,
+			       int			    xDst,
+			       int			    yDst,
+			       XGlyphElt8[]	    elts,
+			       int			    nelt);
+
+	void XRenderCompositeText16 (Display			    dpy,
+				int			    op,
+				Picture			    src,
+				Picture			    dst,
+				XRenderPictFormat   maskFormat,
+				int			    xSrc,
+				int			    ySrc,
+				int			    xDst,
+				int			    yDst,
+				XGlyphElt16[]	    elts,
+				int			    nelt);
+
+	void XRenderCompositeText32 (Display			    dpy,
+				int			    op,
+				Picture			    src,
+				Picture			    dst,
+				XRenderPictFormat   maskFormat,
+				int			    xSrc,
+				int			    ySrc,
+				int			    xDst,
+				int			    yDst,
+				XGlyphElt32[]	    elts,
+				int			    nelt);
+
+	void XRenderFillRectangle (Display		    dpy,
+			      int		    op,
+			      Picture		    dst,
+			      XRenderColor  color,
+			      int		    x,
+			      int		    y,
+			      int	    width,
+			      int	    height);
+
+	void XRenderFillRectangles (Display		    dpy,
+			       int		    op,
+			       Picture		    dst,
+			       XRenderColor color,
+			       XRectangle[]   rectangles,
+			       int		    n_rects);
+
+	void XRenderCompositeTrapezoids (Display		dpy,
+				    int			op,
+				    Picture		src,
+				    Picture		dst,
+				    XRenderPictFormat	maskFormat,
+				    int			xSrc,
+				    int			ySrc,
+				    XTrapezoid[]	traps,
+				    int			ntrap);
+
+	void XRenderCompositeTriangles (Display		dpy,
+				   int			op,
+				   Picture		src,
+				   Picture		dst,
+				    XRenderPictFormat	maskFormat,
+				   int			xSrc,
+				   int			ySrc,
+				   XTriangle[]	triangles,
+				   int			ntriangle);
+
+	void XRenderCompositeTriStrip (Display		dpy,
+				  int			op,
+				  Picture		src,
+				  Picture		dst,
+				    XRenderPictFormat	maskFormat,
+				  int			xSrc,
+				  int			ySrc,
+				  XPointFixed[]	points,
+				  int			npoint);
+
+	void XRenderCompositeTriFan (Display			dpy,
+				int			op,
+				Picture			src,
+				Picture			dst,
+				XRenderPictFormat	maskFormat,
+				int			xSrc,
+				int			ySrc,
+				XPointFixed[]	points,
+				int			npoint);
+
+	void XRenderCompositeDoublePoly (Display		    dpy,
+				    int			    op,
+				    Picture		    src,
+				    Picture		    dst,
+				    XRenderPictFormat	maskFormat,
+				    int			    xSrc,
+				    int			    ySrc,
+				    int			    xDst,
+				    int			    yDst,
+				    XPointDouble[]    fpoints,
+				    int			    npoints,
+				    int			    winding);
+	int XRenderParseColor(Display	dpy, 
+			  String		spec,
+			  XRenderColor	def);
+
+	Cursor XRenderCreateCursor (Display	    dpy,
+			     Picture	    source,
+			     int   x,
+			     int   y);
+
+	XFilters XRenderQueryFilters (Display dpy, Drawable drawable);
+
+	void XRenderSetPictureFilter (Display    dpy,
+				 Picture    picture,
+				 String filter,
+				 int[] /* XFixed */    params,
+				 int	    nparams);
+
+	Cursor XRenderCreateAnimCursor (Display	dpy,
+				 int		ncursor,
+				 XAnimCursor[]	cursors);
+
+
+	void XRenderAddTraps (Display	    dpy,
+			 Picture	    picture,
+			 int		    xOff,
+			 int		    yOff,
+			 XTrap[]	    traps,
+			 int		    ntrap);
+
+	Picture XRenderCreateSolidFill (Display dpy,
+	                                XRenderColor color);
+
+	Picture XRenderCreateLinearGradient (Display dpy,
+	                                     XLinearGradient gradient,
+	                                     int[] /* XFixed */ stops,
+	                                     XRenderColor[] colors,
+	                                     int nstops);
+
+	Picture XRenderCreateRadialGradient (Display dpy,
+	                                     XRadialGradient gradient,
+	                                     int[] /* XFixed */ stops,
+	                                     XRenderColor[] colors,
+	                                     int nstops);
+
+	Picture XRenderCreateConicalGradient (Display dpy,
+	                                      XConicalGradient gradient,
+	                                      int[] /* XFixed */ stops,
+	                                      XRenderColor[] colors,
+	                                      int nstops);
+	class Utils {
+		public static int XDoubleToFixed(double d) { return (int)(d * 65536.0); }
+		public static double XFixedToDouble(int f) { return ((double)f) / 65536.0; }
+	}
     }
 
     /** Definition of the Xevie library. */
@@ -1756,6 +2315,32 @@ public interface X11 extends Library {
     XImage XCreateImage(Display dpy, Visual visual, int depth, int format,
                         int offset, Pointer data, int width, int height,
                         int bitmap_pad, int bytes_per_line);
+    int XInitImage(
+        XImage        image
+    );
+    XImage XGetImage(
+        Display        display,
+        Drawable        d,
+        int            x,
+        int            y,
+        int    width,
+        int    height,
+        NativeLong    plane_mask,
+        int            format
+    );
+    XImage XGetSubImage(
+        Display        display,
+        Drawable        d,
+        int            x,
+        int            y,
+        int    width,
+        int    height,
+        NativeLong    plane_mask,
+        int            format,
+        XImage        dest_image,
+        int            dest_x,
+        int            dest_y
+    );
     int XPutImage(Display dpy, Drawable d, GC gc, XImage image,
                   int src_x, int src_y, int dest_x, int dest_y,
                   int width, int height);
